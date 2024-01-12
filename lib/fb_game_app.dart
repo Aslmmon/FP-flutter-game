@@ -32,6 +32,7 @@ class FBgameApp extends FlameGame {
     camera.viewfinder.anchor = Anchor.topLeft;
 
     initializeGame();
+    debugMode = true;
 
   }
 
