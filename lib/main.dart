@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 void main() {
+  final game = FlameGame();
+
   runApp(const MyApp());
 }
 
