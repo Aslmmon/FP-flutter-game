@@ -5,15 +5,15 @@ class Player extends SpriteAnimationComponent
     with HasGameReference<FBgameApp> {
   Player({
     required super.position,
-  }) : super(size: Vector2.all(150), anchor: Anchor.center);
+  }) : super(size: Vector2.all(64), anchor: Anchor.center);
 
   @override
   void onLoad() {
     animation = SpriteAnimation.fromFrameData(
-      game.images.fromCache('Protect.png'),
+      game.images.fromCache('ember.png'),
       SpriteAnimationData.sequenced(
-        amount: 8,
-        textureSize: Vector2.all(64),
+        amount: 4,
+        textureSize: Vector2.all(16),
         stepTime: 0.12,
       ),
     );
