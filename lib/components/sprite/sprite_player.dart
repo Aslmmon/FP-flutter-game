@@ -6,18 +6,28 @@ import 'package:flame/components.dart';
 import 'package:flame/flame.dart';
 import 'package:flame/sprite.dart';
 
+import '../hud/hud.dart';
+import '../hud/run_button.dart';
 import 'Character.dart';
 
 class SpriteComp extends Character {
-  SpriteComp(
+  SpriteComp(this.joystickComponent, this.runButton, this.hudComponent,
       {required Vector2 position, required Vector2 size, required double speed})
       : super(position: position, size: size, speed: speed);
 
+  late double walkingSpeed, runningSpeed;
+  final JoystickComponent joystickComponent;
+  final RunButton runButton;
+  final HudComponent hudComponent;
+
   @override
   Future<void> onLoad() async {
+    walkingSpeed = speed;
+    runningSpeed = speed * 2;
+
     var spriteImages = await Flame.images.load('Walk.png');
     final spriteSheet =
-        SpriteSheet(image: spriteImages, srcSize: Vector2(width, height));
+    SpriteSheet(image: spriteImages, srcSize: Vector2(width, height));
     final spriteSheetOfRuning = SpriteSheet(
         image: await Flame.images.load("Run.png"),
         srcSize: Vector2(width, height));
@@ -36,7 +46,8 @@ class SpriteComp extends Character {
         animation = spriteSheetOfRuning.createAnimation(row: 0, stepTime: 0.2);
     deadAnimation =
         animation = spriteSheetDead.createAnimation(row: 0, stepTime: 0.2);
-    changeDirection();
+    animation = downAnimation;
+    playing = false;
     add(RectangleHitbox());
     return super.onLoad();
   }
@@ -47,6 +58,53 @@ class SpriteComp extends Character {
     if (other is Enemy) {
       animation = deadAnimation;
       removeFromParent();
+      hudComponent.scoreText.setScore(10);
     }
   }
+
+  @override
+  void update(double dt) {
+    super.update(dt);
+    speed = runButton.buttonPressed ?
+    runningSpeed : walkingSpeed;
+
+    if (!joystickComponent.delta.isZero()) {
+      position.add(joystickComponent.relativeDelta * speed * dt);
+      playing = true;
+      switch (joystickComponent.direction) {
+        case JoystickDirection.up:
+        case JoystickDirection.upRight:
+        case JoystickDirection.upLeft:
+          animation = upAnimation;
+          currentDirection = Character.up;
+          break;
+        case JoystickDirection.down:
+        case JoystickDirection.downRight:
+        case JoystickDirection.downLeft:
+          animation = downAnimation;
+          currentDirection = Character.down;
+          break;
+        case JoystickDirection.left:
+          animation = leftAnimation;
+          currentDirection = Character.left;
+          break;
+        case JoystickDirection.right:
+          animation = rightAnimation;
+          currentDirection = Character.right;
+          break;
+        case JoystickDirection.idle:
+          animation = null;
+          break;
+      }
+    } else {
+      if (playing) {
+        stopAnimations();
+      }
+    }
+  }
+  void stopAnimations() {
+   // animation?.currentIndex = 0;
+    playing = false;
+  }
+
 }

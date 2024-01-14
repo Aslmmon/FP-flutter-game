@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:fb_game/components/sprite/EnemyCharacter.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/flame.dart';
@@ -7,7 +8,7 @@ import 'package:flame/sprite.dart';
 
 import 'Character.dart';
 
-class Enemy extends Character {
+class Enemy extends EnemyCharacter {
   Enemy(
       {required Vector2 position, required Vector2 size, required double speed})
       : super(position: position, size: size, speed: speed);
