@@ -50,7 +50,6 @@ class FBgameApp extends FlameGame
     camera.viewport.add(runButton);
 
     add(ScreenHitbox());
-    camera.viewfinder.anchor = Anchor.center;
     debugMode = true;
   }
 }

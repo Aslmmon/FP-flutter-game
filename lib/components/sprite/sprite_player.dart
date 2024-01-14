@@ -5,6 +5,7 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/flame.dart';
 import 'package:flame/sprite.dart';
+import 'package:flutter/cupertino.dart';
 
 import '../hud/hud.dart';
 import '../hud/run_button.dart';
@@ -55,9 +56,10 @@ class SpriteComp extends Character {
   @override
   void onCollision(Set<Vector2> points, PositionComponent other) {
     super.onCollision(points, other);
+    debugPrint("collision is on $other" );
     if (other is Enemy) {
       animation = deadAnimation;
-      removeFromParent();
+      other.removeFromParent();
       hudComponent.scoreText.setScore(10);
     }
   }
@@ -65,8 +67,7 @@ class SpriteComp extends Character {
   @override
   void update(double dt) {
     super.update(dt);
-    speed = runButton.buttonPressed ?
-    runningSpeed : walkingSpeed;
+    speed = runButton.buttonPressed ? runningSpeed : walkingSpeed;
 
     if (!joystickComponent.delta.isZero()) {
       position.add(joystickComponent.relativeDelta * speed * dt);
