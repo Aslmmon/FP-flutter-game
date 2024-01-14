@@ -18,15 +18,15 @@ class Enemy extends Character {
         image: await Flame.images.load("Walk_solider.png"),
         srcSize: Vector2(width, height));
     animation =
-        spriteSheetOfWalkingSoldiers.createAnimation(row: 0, stepTime: 0.5);
+        spriteSheetOfWalkingSoldiers.createAnimation(row: 0, stepTime: 0.1);
     downAnimation = animation =
-        spriteSheetOfWalkingSoldiers.createAnimation(row: 0, stepTime: 0.5);
+        spriteSheetOfWalkingSoldiers.createAnimation(row: 0, stepTime: 0.1);
     leftAnimation = animation =
-        spriteSheetOfWalkingSoldiers.createAnimation(row: 0, stepTime: 0.5);
+        spriteSheetOfWalkingSoldiers.createAnimation(row: 0, stepTime: 0.1);
     upAnimation = animation =
-        spriteSheetOfWalkingSoldiers.createAnimation(row: 0, stepTime: 0.2);
+        spriteSheetOfWalkingSoldiers.createAnimation(row: 0, stepTime: 0.1);
     rightAnimation = animation =
-        spriteSheetOfWalkingSoldiers.createAnimation(row: 0, stepTime: 0.2);
+        spriteSheetOfWalkingSoldiers.createAnimation(row: 0, stepTime: 0.1);
 
     changeDirection();
     add(RectangleHitbox());

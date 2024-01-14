@@ -13,7 +13,7 @@ class FBgameApp extends FlameGame with HasCollisionDetection {
   Future<void> onLoad() async {
     add(Background());
     add(SpriteComp(position: Vector2(200, 400), size: Vector2(128.0, 128.0), speed: 120.0));
-    add(Enemy(position: Vector2(0, 0), size: Vector2(128.0, 128.0), speed: 50.0));
+    add(Enemy(position: Vector2(50, 50), size: Vector2(128.0, 128.0), speed: 50.0));
 
 
     add(ScreenHitbox());
