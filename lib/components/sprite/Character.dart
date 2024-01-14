@@ -16,13 +16,12 @@ class Character extends SpriteAnimationComponent
       leftAnimation,
       upAnimation,
       deadAnimation,
+  attackAnimation,
       rightAnimation;
   late double speed;
   double elapsedTime = 0.0;
   int currentDirection = down;
   static const int down = 0, left = 1, up = 2, right = 3, dead = 4;
-
-
 }
 
 extension CreateAnimationByColumn on SpriteSheet {

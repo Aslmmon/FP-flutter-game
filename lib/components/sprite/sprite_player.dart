@@ -1,12 +1,10 @@
 import 'dart:async';
-
 import 'package:fb_game/components/sprite/enemy.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/flame.dart';
 import 'package:flame/sprite.dart';
 import 'package:flutter/cupertino.dart';
-
 import '../hud/hud.dart';
 import '../hud/run_button.dart';
 import 'Character.dart';
@@ -20,22 +18,22 @@ class SpriteComp extends Character {
   final JoystickComponent joystickComponent;
   final RunButton runButton;
   final HudComponent hudComponent;
+  late bool isFlipped;
 
   @override
   Future<void> onLoad() async {
+    isFlipped = false;
     walkingSpeed = speed;
     runningSpeed = speed * 2;
+    scale = Vector2(2.5, 2.5);
+    var spriteImages = await Flame.images.load('Old_woman_walk.png');
+    var attachSprite = await Flame.images.load('Old_woman_attack.png');
 
-    var spriteImages = await Flame.images.load('Walk.png');
     final spriteSheet =
-    SpriteSheet(image: spriteImages, srcSize: Vector2(width, height));
-    final spriteSheetOfRuning = SpriteSheet(
-        image: await Flame.images.load("Run.png"),
-        srcSize: Vector2(width, height));
+        SpriteSheet(image: spriteImages, srcSize: Vector2(width, height));
+    final attackSpriteSheet =
+        SpriteSheet(image: attachSprite, srcSize: Vector2(width, height));
 
-    final spriteSheetDead = SpriteSheet(
-        image: await Flame.images.load("Dead.png"),
-        srcSize: Vector2(width, height));
     animation = spriteSheet.createAnimation(row: 0, stepTime: 0.5);
     downAnimation =
         animation = spriteSheet.createAnimation(row: 0, stepTime: 0.5);
@@ -44,22 +42,22 @@ class SpriteComp extends Character {
     upAnimation =
         animation = spriteSheet.createAnimation(row: 0, stepTime: 0.2);
     rightAnimation =
-        animation = spriteSheetOfRuning.createAnimation(row: 0, stepTime: 0.2);
-    deadAnimation =
-        animation = spriteSheetDead.createAnimation(row: 0, stepTime: 0.2);
+        animation = spriteSheet.createAnimation(row: 0, stepTime: 0.2);
+    attackAnimation = attackSpriteSheet.createAnimation(row: 0, stepTime: 0.2);
     animation = downAnimation;
     playing = false;
     add(RectangleHitbox());
+
     return super.onLoad();
   }
 
   @override
   void onCollision(Set<Vector2> points, PositionComponent other) {
     super.onCollision(points, other);
-    debugPrint("collision is on $other" );
+    debugPrint("collision is on $other");
     if (other is Enemy) {
-      animation = deadAnimation;
       other.removeFromParent();
+      animation = attackAnimation;
       hudComponent.scoreText.setScore(10);
     }
   }
@@ -75,21 +73,51 @@ class SpriteComp extends Character {
       switch (joystickComponent.direction) {
         case JoystickDirection.up:
         case JoystickDirection.upRight:
+        if (isFlipped) {
+          flipHorizontally();
+          isFlipped = false;
+        }
+        animation = upAnimation;
+        currentDirection = Character.up;
+        break;
         case JoystickDirection.upLeft:
+        if (!isFlipped) {
+          flipHorizontally();
+          isFlipped = true;
+        }
           animation = upAnimation;
           currentDirection = Character.up;
           break;
         case JoystickDirection.down:
         case JoystickDirection.downRight:
+        if (isFlipped) {
+          flipHorizontally();
+          isFlipped = false;
+        }
+        animation = downAnimation;
+        currentDirection = Character.down;
         case JoystickDirection.downLeft:
+        if (!isFlipped) {
+          flipHorizontally();
+          isFlipped = true;
+        }
           animation = downAnimation;
           currentDirection = Character.down;
           break;
         case JoystickDirection.left:
+          if (!isFlipped) {
+            flipHorizontally();
+            isFlipped = true;
+          }
           animation = leftAnimation;
+          isFlipped = true;
           currentDirection = Character.left;
           break;
         case JoystickDirection.right:
+          if (isFlipped) {
+            flipHorizontally();
+            isFlipped = false;
+          }
           animation = rightAnimation;
           currentDirection = Character.right;
           break;
@@ -103,8 +131,9 @@ class SpriteComp extends Character {
       }
     }
   }
+
   void stopAnimations() {
-   // animation?.currentIndex = 0;
+    // animation?.currentIndex = 0;
     playing = false;
   }
 

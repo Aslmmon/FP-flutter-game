@@ -44,7 +44,7 @@ class FBgameApp extends FlameGame
 
     add(SpriteComp(joystick, runButton,hudComponent,
         position: Vector2(200, 400),
-        size: Vector2(128.0, 128.0),
+        size: Vector2(48, 48),
         speed: 120.0));
     camera.viewport.add(joystick);
     camera.viewport.add(runButton);
