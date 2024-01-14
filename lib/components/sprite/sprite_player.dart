@@ -2,12 +2,15 @@ import 'dart:async';
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:fb_game/fb_game_app.dart';
+import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/flame.dart';
 import 'package:flame/sprite.dart';
 import 'package:flutter/cupertino.dart';
 
-class SpriteComp extends SpriteAnimationComponent {
+class SpriteComp extends SpriteAnimationComponent  with GestureHitboxes,
+    CollisionCallbacks,HasGameRef<FBgameApp>{
   late double screenWidth, screenHeight, centerX, centerY;
   late double georgeSizeWidth = 128.0, georgeSizeHeight = 128.0;
 
@@ -38,17 +41,18 @@ class SpriteComp extends SpriteAnimationComponent {
     position = Vector2(centerX, centerY);
     size = Vector2(georgeSizeWidth, georgeSizeHeight);
 
-    animation = spriteSheet.createAnimation(row: 0, stepTime: 0.2);
+    animation = spriteSheet.createAnimation(row: 0, stepTime: 0.5);
     georgeDownAnimation =
-        animation = spriteSheet.createAnimation(row: 0, stepTime: 0.2);
+        animation = spriteSheet.createAnimation(row: 0, stepTime: 0.5);
     georgeLeftAnimation = animation =
-        spriteSheet.createAnimation(row: 0, stepTime: 0.2);
+        spriteSheet.createAnimation(row: 0, stepTime: 0.5);
     georgeUpAnimation =
         animation = spriteSheet.createAnimation(row: 0, stepTime: 0.2);
     georgeRightAnimation =
         animation = spriteSheetOfRuning.createAnimation(row: 0, stepTime: 0.2);
 
-    // changeDirection();
+     changeDirection();
+    add(RectangleHitbox());
     return super.onLoad();
   }
 
@@ -69,6 +73,7 @@ class SpriteComp extends SpriteAnimationComponent {
         animation = georgeRightAnimation;
         break;
     }
+
     currentDirection = newDirection;
   }
 
@@ -95,6 +100,40 @@ class SpriteComp extends SpriteAnimationComponent {
         break;
     }
   }
+
+  @override
+  void onCollisionStart(Set<Vector2> intersectionPoints, PositionComponent other) {
+    print(other.toString());
+    debugPrint('collision with $other');
+    if (other is ScreenHitbox) {
+      print("clicked");
+      debugPrint('collision with $other');
+
+      switch (currentDirection) {
+
+        case down:
+          currentDirection = up;
+          animation = georgeUpAnimation;
+          break;
+        case left:
+          currentDirection = right;
+          animation = georgeRightAnimation;
+          break;
+        case up:
+          currentDirection = down;
+          animation = georgeDownAnimation;
+          break;
+        case right:
+          currentDirection = left;
+          animation = georgeLeftAnimation;
+          break;
+      }
+      elapsedTime = 0.0;
+    }
+    super.onCollisionStart(intersectionPoints, other);
+
+  }
+
 }
 
 extension CreateAnimationByColumn on SpriteSheet {
@@ -115,4 +154,7 @@ extension CreateAnimationByColumn on SpriteSheet {
       loop: loop,
     );
   }
+
+
+
 }
