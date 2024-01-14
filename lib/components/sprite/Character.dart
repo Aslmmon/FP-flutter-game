@@ -17,11 +17,12 @@ class Character extends SpriteAnimationComponent
   late SpriteAnimation downAnimation,
       leftAnimation,
       upAnimation,
+  deadAnimation,
       rightAnimation;
   late double speed;
   double elapsedTime = 0.0;
   int currentDirection = down;
-  static const int down = 0, left = 1, up = 2, right = 3;
+  static const int down = 0, left = 1, up = 2, right = 3,dead=4;
 
   void changeDirection() {
     Random random = Random();
@@ -38,6 +39,9 @@ class Character extends SpriteAnimationComponent
         break;
       case right:
         animation = rightAnimation;
+        break;
+      case dead:
+        animation = deadAnimation;
         break;
     }
     currentDirection = newDirection;
