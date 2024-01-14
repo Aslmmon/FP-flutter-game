@@ -1,160 +1,35 @@
 import 'dart:async';
-import 'dart:math';
-import 'dart:ui';
-
-import 'package:fb_game/fb_game_app.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/flame.dart';
 import 'package:flame/sprite.dart';
-import 'package:flutter/cupertino.dart';
+import 'Character.dart';
 
-class SpriteComp extends SpriteAnimationComponent  with GestureHitboxes,
-    CollisionCallbacks,HasGameRef<FBgameApp>{
-  late double screenWidth, screenHeight, centerX, centerY;
-  late double georgeSizeWidth = 128.0, georgeSizeHeight = 128.0;
-
-  late SpriteAnimation georgeDownAnimation,
-      georgeLeftAnimation,
-      georgeUpAnimation,
-      georgeRightAnimation;
-  double elapsedTime = 0.0;
-  double georgeSpeed = 40.0;
-  int currentDirection = down;
-  static const int down = 0, left = 1, up = 2, right = 3;
+class SpriteComp extends Character {
+  SpriteComp(
+      {required Vector2 position, required Vector2 size, required double speed})
+      : super(position: position, size: size, speed: speed);
 
   @override
   Future<void> onLoad() async {
-    screenWidth = MediaQueryData.fromView(window).size.width;
-    screenHeight = MediaQueryData.fromView(window).size.height;
-    centerX = (screenWidth / 2) - (georgeSizeWidth / 2);
-    centerY = (screenHeight / 2) - (georgeSizeHeight / 2);
-
     var spriteImages = await Flame.images.load('Walk.png');
-    final spriteSheet = SpriteSheet(
-        image: spriteImages,
-        srcSize: Vector2(georgeSizeWidth, georgeSizeHeight));
-    // sprite = spriteSheet.getSprite(0, 0);
+    final spriteSheet =
+        SpriteSheet(image: spriteImages, srcSize: Vector2(width, height));
     final spriteSheetOfRuning = SpriteSheet(
         image: await Flame.images.load("Run.png"),
-        srcSize: Vector2(georgeSizeWidth, georgeSizeHeight));
-    position = Vector2(centerX, centerY);
-    size = Vector2(georgeSizeWidth, georgeSizeHeight);
-
+        srcSize: Vector2(width, height));
     animation = spriteSheet.createAnimation(row: 0, stepTime: 0.5);
-    georgeDownAnimation =
+    downAnimation =
         animation = spriteSheet.createAnimation(row: 0, stepTime: 0.5);
-    georgeLeftAnimation = animation =
-        spriteSheet.createAnimation(row: 0, stepTime: 0.5);
-    georgeUpAnimation =
+    leftAnimation =
+        animation = spriteSheet.createAnimation(row: 0, stepTime: 0.5);
+    upAnimation =
         animation = spriteSheet.createAnimation(row: 0, stepTime: 0.2);
-    georgeRightAnimation =
+    rightAnimation =
         animation = spriteSheetOfRuning.createAnimation(row: 0, stepTime: 0.2);
 
-     changeDirection();
+    changeDirection();
     add(RectangleHitbox());
     return super.onLoad();
   }
-
-  void changeDirection() {
-    Random random = Random();
-    int newDirection = random.nextInt(4);
-    switch (newDirection) {
-      case down:
-        animation = georgeDownAnimation;
-        break;
-      case left:
-        animation = georgeLeftAnimation;
-        break;
-      case up:
-        animation = georgeUpAnimation;
-        break;
-      case right:
-        animation = georgeRightAnimation;
-        break;
-    }
-
-    currentDirection = newDirection;
-  }
-
-  @override
-  void update(double deltaTime) {
-    super.update(deltaTime);
-    elapsedTime += deltaTime;
-    if (elapsedTime > 3.0) {
-      changeDirection();
-      elapsedTime = 0.0;
-    }
-    switch (currentDirection) {
-      case down:
-        position.y += georgeSpeed * deltaTime;
-        break;
-      case left:
-        position.x -= georgeSpeed * deltaTime;
-        break;
-      case up:
-        position.y -= georgeSpeed * deltaTime;
-        break;
-      case right:
-        position.x += georgeSpeed * deltaTime;
-        break;
-    }
-  }
-
-  @override
-  void onCollisionStart(Set<Vector2> intersectionPoints, PositionComponent other) {
-    print(other.toString());
-    debugPrint('collision with $other');
-    if (other is ScreenHitbox) {
-      print("clicked");
-      debugPrint('collision with $other');
-
-      switch (currentDirection) {
-
-        case down:
-          currentDirection = up;
-          animation = georgeUpAnimation;
-          break;
-        case left:
-          currentDirection = right;
-          animation = georgeRightAnimation;
-          break;
-        case up:
-          currentDirection = down;
-          animation = georgeDownAnimation;
-          break;
-        case right:
-          currentDirection = left;
-          animation = georgeLeftAnimation;
-          break;
-      }
-      elapsedTime = 0.0;
-    }
-    super.onCollisionStart(intersectionPoints, other);
-
-  }
-
-}
-
-extension CreateAnimationByColumn on SpriteSheet {
-  SpriteAnimation createAnimationByColumn({
-    required int column,
-    required double stepTime,
-    bool loop = true,
-    int from = 0,
-    int? to,
-  }) {
-    to ??= columns;
-    final spriteList = List<int>.generate(to - from, (i) => from + i)
-        .map((e) => getSprite(e, column))
-        .toList();
-    return SpriteAnimation.spriteList(
-      spriteList,
-      stepTime: stepTime,
-      loop: loop,
-    );
-  }
-
-
-
 }
