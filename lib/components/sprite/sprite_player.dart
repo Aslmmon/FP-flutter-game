@@ -12,7 +12,7 @@ import '../hud/run_button.dart';
 import 'Character.dart';
 
 class SpriteComp extends Character {
-  SpriteComp(this.joystickComponent, this.runButton, this.hudComponent,
+  SpriteComp(this.joystickComponent, this.runButton, this.hudComponent,this._cameraComponent,
       {required Vector2 position, required Vector2 size, required double speed})
       : super(position: position, size: size, speed: speed);
 
@@ -20,6 +20,8 @@ class SpriteComp extends Character {
   final JoystickComponent joystickComponent;
   final RunButton runButton;
   final HudComponent hudComponent;
+  final CameraComponent _cameraComponent;
+
   late bool isFlipped;
   bool isMoving = false;
   late AudioPlayer audioPlayerRunning;
@@ -55,7 +57,7 @@ class SpriteComp extends Character {
 
 
     await FlameAudio.audioCache.loadAll(
-        ['enemy_dies.wav', 'running.wav', 'sounds/coin.wav']);
+        ['enemy_dies.wav', 'running.wav', 'coin.wav']);
   }
 
   @override
@@ -91,6 +93,7 @@ class SpriteComp extends Character {
   @override
   Future<void> update(double dt) async {
     super.update(dt);
+    _cameraComponent.update(dt);
     speed = runButton.buttonPressed ? runningSpeed : walkingSpeed;
 
     if (!joystickComponent.delta.isZero()) {

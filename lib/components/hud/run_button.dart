@@ -1,3 +1,4 @@
+import 'package:fb_game/fb_game_app.dart';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/input.dart';

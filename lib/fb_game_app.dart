@@ -2,10 +2,12 @@ import 'dart:math';
 
 import 'package:fb_game/components/background/background.dart';
 import 'package:fb_game/components/sprite/enemy.dart';
+import 'package:flame/camera.dart';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flame/palette.dart';
+import 'package:flame/experimental.dart'; // Gives you the Rectangle
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flame_tiled/flame_tiled.dart';
 import 'package:flutter/cupertino.dart';
@@ -25,18 +27,27 @@ class FBgameApp extends FlameGame
   late final HudComponent hudComponent;
 
   late RunButton runButton;
+  late SpriteComp spriteComponent;
+
   final buttonRunPaint = BasicPalette.red.withAlpha(200).paint();
   final buttonDownRunPaint = BasicPalette.red.withAlpha(100).paint();
+  final world = World();
+  late final CameraComponent cameraComponent;
+
+
 
   @override
   Future<void> onLoad() async {
-
-
+    camera.setBounds(Rectangle.fromRect(const Rect.fromLTRB(0, 0, 1600, 1600)));
+    var background = Background();
+    //add(world)
 
     add(Background());
     final tiledMap = await TiledComponent.load('tiles.tmx', Vector2.all(32));
     add(tiledMap);
-    Random random =Random(DateTime.now().millisecondsSinceEpoch);
+    Random random = Random(DateTime
+        .now()
+        .millisecondsSinceEpoch);
     for (int i = 0; i < 50; i++) {
       int randomX = random.nextInt(48) + 1;
       int randomY = random.nextInt(48) + 1;
@@ -45,23 +56,18 @@ class FBgameApp extends FlameGame
       add(Coin(position: Vector2(posCoinX, posCoinY),
           size: Vector2(20, 20)));
     }
-    //add(Enemy(position: Vector2(50, 50), size: Vector2(128.0, 128.0), speed: 50.0));
-
     final enemies = tiledMap.tileMap.getLayer<ObjectGroup>('Enemies');
     enemies?.objects.asMap().forEach((index, position) {
       if (index % 2 == 0) {
-        add(Enemy(position: Vector2(position.x, position.y), size: Vector2(128.0, 128.0), speed: 50.0));
-
+        add(Enemy(position: Vector2(position.x, position.y),
+            size: Vector2(128.0, 128.0),
+            speed: 50.0));
       } else {
-        add(Enemy(position: Vector2(position.x, position.y), size: Vector2(128.0, 128.0), speed: 50.0));
-
+        add(Enemy(position: Vector2(position.x, position.y),
+            size: Vector2(128.0, 128.0),
+            speed: 50.0));
       }
     });
-
-
-
-
-
 
 
     hudComponent = HudComponent();
@@ -78,26 +84,30 @@ class FBgameApp extends FlameGame
         button: CircleComponent(radius: 25.0, paint: buttonRunPaint),
         buttonDown: CircleComponent(radius: 25.0, paint: buttonDownRunPaint),
         margin: const EdgeInsets.only(right: 20, bottom: 50),
-        onPressed: ()  => {
-     //    FlameAudio.play('music.mp3')
-        debugPrint("called")
+        onPressed: () =>
+        {
+          //    FlameAudio.play('music.mp3')
+          debugPrint("called")
+        });
 
-
-    });
-
-    add(SpriteComp(joystick, runButton,hudComponent,
+    spriteComponent = SpriteComp(joystick, runButton, hudComponent,camera,
         position: Vector2(200, 400),
         size: Vector2(48, 48),
-        speed: 120.0));
-    camera.viewport.add(joystick);
-    camera.viewport.add(runButton);
+        speed: 120.0);
+    camera.follow(spriteComponent);
+
+    add(spriteComponent);
+   add(joystick);
+   add(runButton);
 
     add(ScreenHitbox());
+
     FlameAudio.bgm.initialize();
     //FlameAudio.play('music.mp3')
 
     debugMode = true;
-  }
+    }
+
   @override
   void onRemove() {
     FlameAudio.bgm.stop();
@@ -107,9 +117,10 @@ class FBgameApp extends FlameGame
 
 
 
+
   @override
   void lifecycleStateChange(AppLifecycleState state) {
-    switch(state) {
+    switch (state) {
       case AppLifecycleState.paused:
         children.forEach((component) {
           if (component is Character) {
@@ -127,8 +138,9 @@ class FBgameApp extends FlameGame
       case AppLifecycleState.inactive:
       case AppLifecycleState.detached:
       case AppLifecycleState.hidden:
-        // TODO: Handle this case.
-        break; }
+      // TODO: Handle this case.
+        break;
+    }
   }
 
 }
