@@ -4,9 +4,11 @@ import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flame/palette.dart';
+import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/cupertino.dart';
 import 'components/hud/hud.dart';
 import 'components/hud/run_button.dart';
+import 'components/sprite/Character.dart';
 import 'components/sprite/sprite_player.dart';
 
 class FBgameApp extends FlameGame
@@ -24,6 +26,9 @@ class FBgameApp extends FlameGame
 
   @override
   Future<void> onLoad() async {
+
+
+
     add(Background());
     add(Enemy(position: Vector2(50, 50), size: Vector2(128.0, 128.0), speed: 50.0));
     hudComponent = HudComponent();
@@ -40,7 +45,12 @@ class FBgameApp extends FlameGame
         button: CircleComponent(radius: 25.0, paint: buttonRunPaint),
         buttonDown: CircleComponent(radius: 25.0, paint: buttonDownRunPaint),
         margin: const EdgeInsets.only(right: 20, bottom: 50),
-        onPressed: () => {});
+        onPressed: ()  => {
+     //    FlameAudio.play('music.mp3')
+        debugPrint("called")
+
+
+    });
 
     add(SpriteComp(joystick, runButton,hudComponent,
         position: Vector2(200, 400),
@@ -50,6 +60,42 @@ class FBgameApp extends FlameGame
     camera.viewport.add(runButton);
 
     add(ScreenHitbox());
+    FlameAudio.bgm.initialize();
+    //FlameAudio.play('music.mp3')
+
     debugMode = true;
   }
+  @override
+  void onRemove() {
+    FlameAudio.bgm.stop();
+    FlameAudio.audioCache.clearAll();
+    super.onRemove();
+  }
+
+
+
+  @override
+  void lifecycleStateChange(AppLifecycleState state) {
+    switch(state) {
+      case AppLifecycleState.paused:
+        children.forEach((component) {
+          if (component is Character) {
+            component.onPaused();
+          }
+        });
+        break;
+      case AppLifecycleState.resumed:
+        children.forEach((component) {
+          if (component is Character) {
+            component.onResumed();
+          }
+        });
+        break;
+      case AppLifecycleState.inactive:
+      case AppLifecycleState.detached:
+      case AppLifecycleState.hidden:
+        // TODO: Handle this case.
+        break; }
+  }
+
 }

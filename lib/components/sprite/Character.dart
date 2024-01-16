@@ -22,6 +22,10 @@ class Character extends SpriteAnimationComponent
   double elapsedTime = 0.0;
   int currentDirection = down;
   static const int down = 0, left = 1, up = 2, right = 3, dead = 4;
+
+
+  void onPaused() {}
+  void onResumed() {}
 }
 
 extension CreateAnimationByColumn on SpriteSheet {
@@ -43,3 +47,4 @@ extension CreateAnimationByColumn on SpriteSheet {
     );
   }
 }
+

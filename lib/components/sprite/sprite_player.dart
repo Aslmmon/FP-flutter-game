@@ -4,6 +4,7 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/flame.dart';
 import 'package:flame/sprite.dart';
+import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/cupertino.dart';
 import '../hud/hud.dart';
 import '../hud/run_button.dart';
@@ -19,6 +20,9 @@ class SpriteComp extends Character {
   final RunButton runButton;
   final HudComponent hudComponent;
   late bool isFlipped;
+  bool isMoving = false;
+  late AudioPlayer audioPlayerRunning;
+
 
   @override
   Future<void> onLoad() async {
@@ -48,7 +52,9 @@ class SpriteComp extends Character {
     playing = false;
     add(RectangleHitbox());
 
-    return super.onLoad();
+
+    await FlameAudio.audioCache.loadAll(
+        ['enemy_dies.wav', 'running.wav']);
   }
 
   @override
@@ -59,17 +65,35 @@ class SpriteComp extends Character {
       other.removeFromParent();
       animation = attackAnimation;
       hudComponent.scoreText.setScore(10);
+      FlameAudio.play('enemy_dies.wav',volume: 1.0);
     }
   }
 
   @override
-  void update(double dt) {
+  void onPaused() {
+    if (isMoving) {
+      audioPlayerRunning.pause();
+    }
+  }
+  @override
+  void onResumed() {
+    if (isMoving) {
+      audioPlayerRunning.resume();
+    }
+  }
+
+  @override
+  Future<void> update(double dt) async {
     super.update(dt);
     speed = runButton.buttonPressed ? runningSpeed : walkingSpeed;
 
     if (!joystickComponent.delta.isZero()) {
       position.add(joystickComponent.relativeDelta * speed * dt);
       playing = true;
+      if (!isMoving) {
+        isMoving = true;
+        audioPlayerRunning = await FlameAudio.loopLongAudio('running.wav', volume: 1.0);
+      }
       switch (joystickComponent.direction) {
         case JoystickDirection.up:
         case JoystickDirection.upRight:
@@ -129,6 +153,12 @@ class SpriteComp extends Character {
       if (playing) {
         stopAnimations();
       }
+      if (isMoving) {
+        debugPrint("i'm here");
+        isMoving = false;
+        audioPlayerRunning.stop();
+      }
+
     }
   }
 

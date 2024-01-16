@@ -5,7 +5,10 @@ import 'package:flutter/material.dart';
 void main() {
   runApp(
     const GameWidget<FBgameApp>.controlled(
-      gameFactory: FBgameApp.new,
-    ),
+      gameFactory: FBgameApp.new,),
   );
+
+
+
+
 }
