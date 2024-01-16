@@ -6,6 +6,7 @@ import 'package:flame/flame.dart';
 import 'package:flame/sprite.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/cupertino.dart';
+import '../coin/Coin.dart';
 import '../hud/hud.dart';
 import '../hud/run_button.dart';
 import 'Character.dart';
@@ -54,7 +55,7 @@ class SpriteComp extends Character {
 
 
     await FlameAudio.audioCache.loadAll(
-        ['enemy_dies.wav', 'running.wav']);
+        ['enemy_dies.wav', 'running.wav', 'sounds/coin.wav']);
   }
 
   @override
@@ -66,6 +67,11 @@ class SpriteComp extends Character {
       animation = attackAnimation;
       hudComponent.scoreText.setScore(10);
       FlameAudio.play('enemy_dies.wav',volume: 1.0);
+    }
+    if (other is Coin) {
+      other.removeFromParent();
+      hudComponent.scoreText.setScore(20);
+      FlameAudio.play('coin.wav', volume: 1.0);
     }
   }
 

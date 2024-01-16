@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:fb_game/components/background/background.dart';
 import 'package:fb_game/components/sprite/enemy.dart';
 import 'package:flame/components.dart';
@@ -5,7 +7,9 @@ import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flame/palette.dart';
 import 'package:flame_audio/flame_audio.dart';
+import 'package:flame_tiled/flame_tiled.dart';
 import 'package:flutter/cupertino.dart';
+import 'components/coin/Coin.dart';
 import 'components/hud/hud.dart';
 import 'components/hud/run_button.dart';
 import 'components/sprite/Character.dart';
@@ -28,10 +32,38 @@ class FBgameApp extends FlameGame
   Future<void> onLoad() async {
 
 
+
+    add(Background());
     final tiledMap = await TiledComponent.load('tiles.tmx', Vector2.all(32));
     add(tiledMap);
-    add(Background());
-    add(Enemy(position: Vector2(50, 50), size: Vector2(128.0, 128.0), speed: 50.0));
+    Random random =Random(DateTime.now().millisecondsSinceEpoch);
+    for (int i = 0; i < 50; i++) {
+      int randomX = random.nextInt(48) + 1;
+      int randomY = random.nextInt(48) + 1;
+      double posCoinX = (randomX * 32) + 5;
+      double posCoinY = (randomY * 32) + 5;
+      add(Coin(position: Vector2(posCoinX, posCoinY),
+          size: Vector2(20, 20)));
+    }
+    //add(Enemy(position: Vector2(50, 50), size: Vector2(128.0, 128.0), speed: 50.0));
+
+    final enemies = tiledMap.tileMap.getLayer<ObjectGroup>('Enemies');
+    enemies?.objects.asMap().forEach((index, position) {
+      if (index % 2 == 0) {
+        add(Enemy(position: Vector2(position.x, position.y), size: Vector2(128.0, 128.0), speed: 50.0));
+
+      } else {
+        add(Enemy(position: Vector2(position.x, position.y), size: Vector2(128.0, 128.0), speed: 50.0));
+
+      }
+    });
+
+
+
+
+
+
+
     hudComponent = HudComponent();
     add(hudComponent);
     final knobPaint = BasicPalette.blue.withAlpha(200).paint();
