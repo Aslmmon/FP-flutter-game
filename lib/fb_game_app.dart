@@ -28,7 +28,8 @@ class FBgameApp extends FlameGame
   Future<void> onLoad() async {
 
 
-
+    final tiledMap = await TiledComponent.load('tiles.tmx', Vector2.all(32));
+    add(tiledMap);
     add(Background());
     add(Enemy(position: Vector2(50, 50), size: Vector2(128.0, 128.0), speed: 50.0));
     hudComponent = HudComponent();
