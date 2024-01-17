@@ -41,7 +41,7 @@ class FBgameApp extends FlameGame
   Future<void> onLoad() async {
     FlameAudio.bgm.initialize();
     camera.viewport.anchor = Anchor.topLeft;
-     camera.setBounds(Rectangle.fromRect(const Rect.fromLTWH(0, 0, 5000, 1600)));
+     camera.setBounds(Rectangle.fromRect(const Rect.fromLTWH(0, 0, 1600, 1600)));
     final worlds = findGame()!.world;
 
     /**
