@@ -24,7 +24,6 @@ class RunButton extends HudButtonComponent with TapCallbacks {
   );
   bool buttonPressed = false;
 
-
   @override
   void onTapUp(TapUpEvent event) {
     buttonPressed = true;

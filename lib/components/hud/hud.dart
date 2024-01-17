@@ -7,10 +7,11 @@ import 'package:flutter/cupertino.dart';
 import 'joystick.dart';
 
 class HudComponent extends PositionComponent {
-  HudComponent() : super(priority: 20);
+  HudComponent(this._world) : super(priority: 20);
   late Joystick joystick;
   late RunButton runButton;
   late ScoreText scoreText;
+  final World _world;
 
 
   @override
@@ -32,10 +33,7 @@ class HudComponent extends PositionComponent {
         margin: const EdgeInsets.only(right: 20, bottom: 50),
         onPressed: () => {});
     scoreText = ScoreText(margin: const EdgeInsets.only(left: 40, top: 60));
-    add(joystick);
-    add(runButton);
-    add(scoreText);
-
+    findGame()?.camera.viewport.addAll([joystick,scoreText,runButton]);
 
   }
 }

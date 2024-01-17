@@ -1,26 +1,34 @@
 import 'dart:ui';
 
 import 'package:flame/components.dart';
+import 'package:flame/events.dart';
 import 'package:flame/palette.dart';
 import 'package:flutter/cupertino.dart';
 
-class Background extends PositionComponent {
+import '../sprite/sprite_player.dart';
+
+class Background extends PositionComponent with TapCallbacks {
   static final backgroundPaint =
   BasicPalette.white.paint();
   late double screenWidth, screenHeight;
+
   @override
   Future<void> onLoad() async {
     super.onLoad();
-    screenWidth =
-        MediaQueryData.fromView(window).size.width;
-    screenHeight =
-        MediaQueryData.fromView(window).size.height;
     position = Vector2(0, 0);
-    size = Vector2(screenWidth, screenHeight);
+    size = Vector2(size.x, size.y);
   }
+  // @override
+  // void render(Canvas canvas) {
+  //   super.render(canvas);
+  //   canvas.drawRect(Rect.fromPoints(position.toOffset(),
+  //       size.toOffset()), backgroundPaint);
+  // }
+
+
   @override
-  void render(Canvas canvas) {
-    super.render(canvas);
-    canvas.drawRect(Rect.fromPoints(position.toOffset(),
-        size.toOffset()), backgroundPaint);
-  } }
+  void onTapUp(TapUpEvent event) {
+    super.onTapUp(event);
+  }
+
+}
